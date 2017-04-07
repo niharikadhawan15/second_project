@@ -38,14 +38,23 @@ user_by_username('visheshdhawan')
 
 #This function is used to fetch user/'s public posts
 def get_user_post(insta_username):
-    a=int(raw_input("enter post number for which you want to get the id"))
     insta_user_id=user_by_username(insta_username)
     request_url=Base_Url+'/users/'+insta_user_id+'/media/recent/?access_token='+app_access_token
-    print request_url
     recent_posts=requests.get(request_url).json()
-    print recent_posts
-    print "The post_id is " +str(recent_posts['data'][a]['id'])
-    return recent_posts['data'][a]['id']
+    print "number of recent posts : "+ str(len(recent_posts))
+    if len(recent_posts)>1:
+        a = int(raw_input("enter post number for which you want to get the id"))
+        print recent_posts
+        print "The post_id is " + str(recent_posts['data'][a]['id'])
+        print "The link of the post is:"+recent_posts['data'][a]['link']
+        return recent_posts['data'][a]['id']
+    else:
+        print "The post_id is " + str(recent_posts['data'][0]['id'])
+        print "The link of the post is:" + recent_posts['data'][0]['link']
+        return recent_posts['data'][0]['id']
+
 get_user_post('visheshdhawan')
+
+
 
 
