@@ -56,7 +56,7 @@ def get_user_post(insta_username):
         else:
             print "This post is not in the recent posts"
     else :
-        x=raw_input("Enter y if you want to get user_id with maximum likes\n")
+        x=raw_input("\nEnter y if you want to get user_id with maximum likes\n")
         if x=='y' or x=='Y':
             print recent_posts
             if len(recent_posts['data']):
@@ -87,7 +87,42 @@ def like_post_for_user(insta_username):
     else:
         print "Like operation is unsuccessful"
 
-like_post_for_user('api_17790')
+#like_post_for_user('api_17790')
+
+
+# This function is declared to comment on user\'s posts.
+def comment_user_post(insta_user):
+    post_id = get_user_post(insta_user)
+    url = Base_Url + "/media/" + str(post_id) + "/comments"
+    text = raw_input("Enter the comment that you want to post : ")
+    payload = {'access_token': app_access_token, 'text':text }
+    response = requests.post(url, payload).json()
+    if response['meta']['code'] == 200:
+        print("Your comment has been Posted on the particular post_id.")
+    else:
+        print("The comment operation was unsuccessful")
+
+#comment_user_post('api_17790')
+
+# This function is used to return comment Id that contains a particular word.
+def search_word_in_comment(insta_user):
+    post_id = get_user_post(insta_user)
+    request_url = Base_Url + "/media/" + str(post_id) + "/comments/?access_token=" + app_access_token
+    response = requests.get(request_url).json()
+    print response
+    word = raw_input("Enter the word you want to search in the comments : ")
+    #comments=[]
+    #comments.append(comments[word])
+    #print comments
+    for i in response['data']:
+        if i in response['data']:
+            print "commeni-id is :"
+            print response['data'][1]
+            return response['data'][1]
+    else:
+        print "No such comment is there that contains this word."
+
+search_word_in_comment('visheshdhawan')
 
 
 
