@@ -16,7 +16,10 @@ print data.json()
 def owner_info():
     url=Base_Url+'/users/self/?access_token='+app_access_token
     my_info=requests.get(url).json()
+    print "Details of owner:"
+    print "Url is :"
     print url
+    print "owner's information in json format is:"
     print my_info
     print my_info['data']['website']
     print my_info['data']['bio']
@@ -42,19 +45,49 @@ def get_user_post(insta_username):
     request_url=Base_Url+'/users/'+insta_user_id+'/media/recent/?access_token='+app_access_token
     recent_posts=requests.get(request_url).json()
     print "number of recent posts : "+ str(len(recent_posts))
-    if len(recent_posts)>1:
-        a = int(raw_input("enter post number for which you want to get the id"))
-        print recent_posts
-        print "The post_id is " + str(recent_posts['data'][a]['id'])
-        print "The link of the post is:"+recent_posts['data'][a]['link']
-        return recent_posts['data'][a]['id']
+    x=raw_input("Do you want the id of recent posts or any of the public post of the user ? \n \nPress y to get the id of recent posts only.\n Press n to get the id of any public post of the user")
+    if x=='y'or x=='Y':
+        a = int(raw_input("\nenter post number for which you want to get the id\n"))
+        if  len(recent_posts)>a>0:
+            print recent_posts
+            print "The post_id is " + str(recent_posts['data'][a]['id'])
+            print "The link of the post is:" + recent_posts['data'][a]['link']
+            return recent_posts['data'][a]['id']
+        else:
+            print "This post is not in the recent posts"
+    else :
+        x=raw_input("Enter y if you want to get user_id with maximum likes\n")
+        if x=='y' or x=='Y':
+            print recent_posts
+            if len(recent_posts['data']):
+                a = []
+                for i in (range(len(recent_posts['data']))):
+                    a.append(recent_posts['data'][i]['likes']['count'])
+                    print recent_posts['data'][i]['likes']['count']
+                print a
+                b = max(a)
+                key=a.index(b)
+                print "Maximum likes are " + str(b) + " on recent post no." + str(key)
+                z=key
+                return recent_posts['data'][z]['id']
+        else:
+            return recent_posts['data'][0]['id']
+
+#This function is declared to like a post.
+def like_post_for_user(insta_username):
+    post_id= get_user_post(insta_username)
+    print post_id
+    payload={"aceess_token":app_access_token}
+    request_url=Base_Url+"/media/"+str(post_id)+"/likes/?access_token="+app_access_token
+    response_to_like=requests.post(request_url).json()
+    print response_to_like['meta']['code']
+    print response_to_like
+    if response_to_like['meta']['code'] ==200:
+         print "Like operation is successful"
     else:
-        print "The post_id is " + str(recent_posts['data'][0]['id'])
-        print "The link of the post is:" + recent_posts['data'][0]['link']
-        return recent_posts['data'][0]['id']
+        print "Like operation is unsuccessful"
 
-get_user_post('visheshdhawan')
-
+like_post_for_user('api_17790')
 
 
 
