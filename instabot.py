@@ -168,8 +168,7 @@ def delete_comment(insta_user):
 
 
 # This function prints the average number of words per comment
-def average_words(insta_user):
-    post_id=get_user_post(insta_user)
+def average_words(ipost_id):
     print post_id
     request_url = Base_Url + "/media/" + str(post_id) + "/comments/?access_token=" + app_access_token
     response = requests.get(request_url).json()
@@ -205,7 +204,8 @@ if a=='1':
     elif b=='7':
         delete_comment(insta_user)
     elif b=='8':
-        average_words(insta_user)
+        post_id = get_user_post(insta_user)
+        average_words(post_id)
     else:
         print "wrong choice \nExit"
 elif a=='2':
@@ -226,7 +226,8 @@ elif a=='2':
     elif b == '7':
         delete_comment(insta_user)
     elif b == '8':
-        average_words(insta_user)
+        post_id = get_user_post(insta_user)
+        average_words(post_id)
     else:
         print "wrong choice \nExit"
 else:
