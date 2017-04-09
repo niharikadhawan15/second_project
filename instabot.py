@@ -28,7 +28,7 @@ def owner_info():
     print "\nThe owner is followed By : ", my_info['data']['counts']['followed_by']
     print "\nThe followers of the owner are : ", my_info['data']['counts']['follows']
 
-owner_info()
+
 
 #This function is used to get another user Id on which operations such as like,comment are to be performed.
 def user_by_username(insta_user):
@@ -42,7 +42,7 @@ def user_by_username(insta_user):
     else:
          print "No such user"
 
-#user_by_username('visheshdhawan')
+
 
 #This function is used to fetch user/'s public posts
 def get_user_post(insta_username):
@@ -50,7 +50,7 @@ def get_user_post(insta_username):
     request_url=Base_Url+'/users/'+insta_user_id+'/media/recent/?access_token='+app_access_token
     recent_posts=requests.get(request_url).json()
     print "\nNumber of recent posts : "+ str(len(recent_posts))
-    x=raw_input("\nDo you want the id of recent posts or any of the public post of the user ? \nPress y to get the id of recent posts only.\nPress n to get the id of any public post of the user")
+    x=raw_input("\nDo you want the id of recent posts or any of the public post of the user ? \nPress y to get the id of recent posts only.\nPress n to get the id of interesting posts.")
     if x=='y'or x=='Y':
         a = int(raw_input("\nenter post number for which you want to get the id\n"))
         if  len(recent_posts)>a>=0:
@@ -62,7 +62,7 @@ def get_user_post(insta_username):
             print "This post is not in the recent posts....You will be getting the defaul id"
             return recent_posts['data'][0]['id']
     else :
-        x=raw_input("\nEnter y if you want to get user_id with maximum likes\n")
+        x=raw_input("\nEnter y if you want to get user_id with maximum likes\nEnter n if you want id with maximum comment")
         if x=='y' or x=='Y':
             print recent_posts
             if len(recent_posts['data']):
@@ -77,8 +77,24 @@ def get_user_post(insta_username):
                 print "\nMaximum likes are " + str(b) + " on recent post no." + str(key)
                 z=key
                 return recent_posts['data'][z]['id']
+        elif x=='n' or x=='Y':
+            print recent_posts
+            if len(recent_posts['data']):
+                a = []
+                for i in (range(len(recent_posts['data']))):
+                    a.append(recent_posts['data'][i]['comments']['count'])
+                    print "\nThe numbers of like on posts are"
+                    print recent_posts['data'][i]['comments']['count']
+                print a
+                b = max(a)
+                key = a.index(b)
+                print "\nMaximum comments are " + str(b) + " on recent post no." + str(key)
+                z = key
+                return recent_posts['data'][z]['id']
+
         else:
             return recent_posts['data'][0]['id']
+
 
 #This function is declared to like a post.
 def like_post_for_user(insta_username):
@@ -95,7 +111,7 @@ def like_post_for_user(insta_username):
     else:
         print "Like operation is unsuccessful"
 
-#like_post_for_user('api_17790')
+
 
 
 # This function is declared to comment on user\'s posts.
@@ -110,7 +126,7 @@ def comment_user_post(insta_user):
     else:
         print "The comment operation was unsuccessful"
 
-comment_user_post('api_17790')
+
 
 # This function is used to return comment Id that contains a particular word.
 def search_word_in_comment(insta_user):
@@ -133,13 +149,12 @@ def search_word_in_comment(insta_user):
     if len(comments_found) == 0:
         print "There is no such comment"
     else:
-        return comments_id_found
+        return comments_id_found,post_id
+
 
 #search_word_in_comment('visheshdhawan')
-
 def delete_comment(insta_user):
-    post_id=get_user_post(insta_user)
-    comments_id_found=search_word_in_comment(insta_user)
+    comments_id_found,post_id=search_word_in_comment(insta_user)
     print post_id
     for i in range(len(comments_id_found)):
         url = Base_Url + "/media/" + str(post_id) + "/comments/" + str(
@@ -151,13 +166,6 @@ def delete_comment(insta_user):
         else:
             print "The delete comment operation unsuccessful"
 
-    #comment_id=search_word_in_comment(insta_user)
-    #request_url=Base_Url+'/media/'+post_id+'/comments/'+str(comment_id)+'?access_token='+app_access_token
-    #print request_url
-
-
-
-delete_comment('api_17790')
 
 # This function prints the average number of words per comment
 def average_words(insta_user):
@@ -177,4 +185,49 @@ def average_words(insta_user):
         print "Average no. of words per comment in the post is :",average
 
 #post_id = get_user_post(insta_user)
-average_words('api_17790')
+
+a=raw_input("Select the user_name for which you want to perform operations such as like and comment\nEnter 1 for api_17790\nEnter 2 for visheshdhawan")
+if a=='1':
+    insta_user='api_17790'
+    b=raw_input("\nselect the operation you want to perform\nEnter 1 to get owner_info\nEnter 2 for user_detail\nEnter 3 for getting user_post_id\nEnter 4 for like\nEnter 5 for comment\nEnter 6 to search word in comment\nEnter 7 for delete.\nEnter 8 to find the average words")
+    if b=='1':
+        owner_info()
+    elif b=='2':
+        user_by_username(insta_user)
+    elif b=='3':
+        get_user_post(insta_user)
+    elif b=='4':
+        like_post_for_user(insta_user)
+    elif b=='5':
+        comment_user_post(insta_user)
+    elif b=='6':
+        search_word_in_comment(insta_user)
+    elif b=='7':
+        delete_comment(insta_user)
+    elif b=='8':
+        average_words(insta_user)
+    else:
+        print "wrong choice \nExit"
+elif a=='2':
+    insta_user='visheshdhawan'
+    b = raw_input( "\nselect the operation you want to perform\nEnter 1 to get owner_info\nEnter 2 for user_detail\nEnter 3 for getting user_post_id\nEnter 4 for like\nEnter 5 for comment\nEnter 6 to search word in comment\nEnter 7 for delete.\nEnter 8 to find the average words")
+    if b == '1':
+        owner_info()
+    elif b == '2':
+        user_by_username(insta_user)
+    elif b == '3':
+        get_user_post(insta_user)
+    elif b == '4':
+        like_post_for_user(insta_user)
+    elif b == '5':
+        comment_user_post(insta_user)
+    elif b == '6':
+        search_word_in_comment(insta_user)
+    elif b == '7':
+        delete_comment(insta_user)
+    elif b == '8':
+        average_words(insta_user)
+    else:
+        print "wrong choice \nExit"
+else:
+    print "wrong choice\nExit"
