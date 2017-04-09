@@ -1,3 +1,4 @@
+
 #client_id=db0568c91948473ab1ed24e07dcdcfdf
 #access_token=4982415356.db0568c.d88e476700ec4d5caf3cb4649b183ad9
 
@@ -52,13 +53,14 @@ def get_user_post(insta_username):
     x=raw_input("\nDo you want the id of recent posts or any of the public post of the user ? \nPress y to get the id of recent posts only.\nPress n to get the id of any public post of the user")
     if x=='y'or x=='Y':
         a = int(raw_input("\nenter post number for which you want to get the id\n"))
-        if  len(recent_posts)>a>0:
+        if  len(recent_posts)>a>=0:
             print recent_posts
             print "The post_id is " + str(recent_posts['data'][a]['id'])
             print "The link of the post is:" + recent_posts['data'][a]['link']
             return recent_posts['data'][a]['id']
         else:
-            print "This post is not in the recent posts"
+            print "This post is not in the recent posts....You will be getting the defaul id"
+            return recent_posts['data'][0]['id']
     else :
         x=raw_input("\nEnter y if you want to get user_id with maximum likes\n")
         if x=='y' or x=='Y':
@@ -117,31 +119,62 @@ def search_word_in_comment(insta_user):
     response = requests.get(request_url).json()
     print response
     word = raw_input ("\nEnter the word you want to search in the comments : ")
-    for i in response['data']:
-        if i in response['data']:
-            print "comment-id is :"
-            print response['data'][-1]['id']
-            print response['data'][-1]['text']
-            return response['data'][-1]['id']
+    comments = []
+    comments_id = []
+    for a in response['data']:
+        comments.append(a['text'])
+        comments_id.append(a['id'])
+    comments_found = []
+    comments_id_found = []
+    for i in range(len(comments)):
+        if word in comments[i]:
+            comments_found.append(comments[i])
+            comments_id_found.append(comments_id[i])
+    if len(comments_found) == 0:
+        print "There is no such comment"
     else:
-        print "No such comment is there that contains this word."
+        return comments_id_found
 
 #search_word_in_comment('visheshdhawan')
 
 def delete_comment(insta_user):
     post_id=get_user_post(insta_user)
+    comments_id_found=search_word_in_comment(insta_user)
     print post_id
-    comment_id=search_word_in_comment(insta_user)
-    #a='DELETE'
-    #payload= {'DELETE':a}
-    request_url=Base_Url+'/media/'+post_id+'/comments/'+str(comment_id)+'?access_token='+app_access_token
-    print request_url
-    comments_response=requests.delete(request_url).json()
-    print comments_response
-    if comments_response['meta']['code']==200:
-        print "Comment deleted successfully"
-    else:
-        print "The delete comment operation unsuccessful"
+    for i in range(len(comments_id_found)):
+        url = Base_Url + "/media/" + str(post_id) + "/comments/" + str(
+        comments_id_found[i]) + "/?access_token=" + app_access_token
+        comments_response = requests.delete(url).json()
+        print comments_response
+        if comments_response['meta']['code'] == 200:
+            print "Comment deleted successfully"
+        else:
+            print "The delete comment operation unsuccessful"
+
+    #comment_id=search_word_in_comment(insta_user)
+    #request_url=Base_Url+'/media/'+post_id+'/comments/'+str(comment_id)+'?access_token='+app_access_token
+    #print request_url
+
+
 
 delete_comment('api_17790')
 
+# This function prints the average number of words per comment
+def average_words(insta_user):
+    post_id=get_user_post(insta_user)
+    print post_id
+    request_url = Base_Url + "/media/" + str(post_id) + "/comments/?access_token=" + app_access_token
+    response = requests.get(request_url).json()
+    if len(response['data']) == 0:
+        print("There are no comments on this post")
+    else:
+        total=0
+        comments=[]
+        for comment in response['data']:
+          comments.append(comment['text'])
+          total += len(comment['text'].split())
+        average = float(total) / len(comments)
+        print "Average no. of words per comment in the post is :",average
+
+#post_id = get_user_post(insta_user)
+average_words('api_17790')
