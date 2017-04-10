@@ -99,9 +99,9 @@ def get_user_post(insta_username):
 def like_post_for_user(insta_username):
     post_id= get_user_post(insta_username)
     print post_id
-    payload={"aceess_token":app_access_token}
-    request_url=Base_Url+"/media/"+str(post_id)+"/likes/?access_token="+app_access_token
-    response_to_like=requests.post(request_url).json()
+    payload={"access_token":app_access_token}
+    request_url=Base_Url+"/media/"+str(post_id)+"/likes"
+    response_to_like=requests.post(request_url,payload).json()
     print response_to_like['meta']['code']
     print "\n The response to like is\n"
     print response_to_like
