@@ -2,6 +2,7 @@
 #client_id=db0568c91948473ab1ed24e07dcdcfdf
 #access_token=4982415356.db0568c.d88e476700ec4d5caf3cb4649b183ad9
 
+#requests library imported to make network requests
 import requests
 
 #access token generated from instagram.com/developer
@@ -10,8 +11,6 @@ app_access_token='4982415356.db0568c.d88e476700ec4d5caf3cb4649b183ad9'
 #base url for all the requests
 Base_Url='https://api.instagram.com/v1'
 
-data=requests.get('https://api.instagram.com/v1/tags/nofilter/media/recent?access_token=4982415356.db0568c.d88e476700ec4d5caf3cb4649b183ad9')
-print "JSON data of the owner is ",data.json()
 
 #This function is used to fetch owner's details
 def owner_info():
@@ -126,6 +125,17 @@ def comment_user_post(insta_user):
     else:
         print "The comment operation was unsuccessful"
 
+# this function prints the comments on the particular post.
+def get_comment(insta_user):
+    post_id = get_user_post(insta_user)
+    request_url = Base_Url + "/media/" + str(post_id) + "/comments/?access_token=" + app_access_token
+    response = requests.get(request_url).json()
+    print response
+    if response['meta']['code'] == 200:
+        print "operation is successfully completed"
+    else:
+        print "The operation is unsuccessful"
+
 
 
 # This function is used to return comment Id that contains a particular word.
@@ -147,7 +157,12 @@ def search_word_in_comment(insta_user):
             comments_found.append(comments[i])
             comments_id_found.append(comments_id[i])
     if len(comments_found) == 0:
-        print "There is no such comment"
+        print "There is no such comment posted by you"
+        a=raw_input("Do you want to search again for another word.... please enter y")
+        if a=='y' or a=='Y':
+            search_word_in_comment(insta_user)
+        else :
+            return 0,post_id
     else:
         return comments_id_found,post_id
 
@@ -156,15 +171,19 @@ def search_word_in_comment(insta_user):
 def delete_comment(insta_user):
     comments_id_found,post_id=search_word_in_comment(insta_user)
     print post_id
-    for i in range(len(comments_id_found)):
-        url = Base_Url + "/media/" + str(post_id) + "/comments/" + str(
-        comments_id_found[i]) + "/?access_token=" + app_access_token
-        comments_response = requests.delete(url).json()
-        print comments_response
-        if comments_response['meta']['code'] == 200:
-            print "Comment deleted successfully"
-        else:
-            print "The delete comment operation unsuccessful"
+    if comments_id_found!=0:
+        for i in range(len(comments_id_found)):
+            url = Base_Url + "/media/" + str(post_id) + "/comments/" + str(
+                comments_id_found[i]) + "/?access_token=" + app_access_token
+            comments_response = requests.delete(url).json()
+            print comments_response
+            if comments_response['meta']['code'] == 200:
+                print "Comment deleted successfully"
+            else:
+                print "The delete comment operation unsuccessful"
+    else:
+        print "You cannot delete this comment"
+
 
 
 # This function prints the average number of words per comment
@@ -185,10 +204,11 @@ def average_words(ipost_id):
 
 #post_id = get_user_post(insta_user)
 
+
 a=raw_input("Select the user_name for which you want to perform operations such as like and comment\nEnter 1 for api_17790\nEnter 2 for visheshdhawan")
 if a=='1':
     insta_user='api_17790'
-    b=raw_input("\nselect the operation you want to perform\nEnter 1 to get owner_info\nEnter 2 for user_detail\nEnter 3 for getting user_post_id\nEnter 4 for like\nEnter 5 for comment\nEnter 6 to search word in comment\nEnter 7 for delete.\nEnter 8 to find the average words")
+    b=raw_input("\nselect the operation you want to perform\nEnter 1 to get owner_info\nEnter 2 for user_detail\nEnter 3 for getting user_post_id\nEnter 4 for like\nEnter 5 for comment\nEnter 6 to search word in comment\nEnter 7 to get comments\nEnter 8 for delete.\nEnter 9 to find the average words")
     if b=='1':
         owner_info()
     elif b=='2':
@@ -202,15 +222,18 @@ if a=='1':
     elif b=='6':
         search_word_in_comment(insta_user)
     elif b=='7':
-        delete_comment(insta_user)
+        get_comment(insta_user)
     elif b=='8':
+        delete_comment(insta_user)
+    elif b=='9':
         post_id = get_user_post(insta_user)
         average_words(post_id)
     else:
         print "wrong choice \nExit"
 elif a=='2':
     insta_user='visheshdhawan'
-    b = raw_input( "\nselect the operation you want to perform\nEnter 1 to get owner_info\nEnter 2 for user_detail\nEnter 3 for getting user_post_id\nEnter 4 for like\nEnter 5 for comment\nEnter 6 to search word in comment\nEnter 7 for delete.\nEnter 8 to find the average words")
+    b = raw_input(
+        "\nselect the operation you want to perform\nEnter 1 to get owner_info\nEnter 2 for user_detail\nEnter 3 for getting user_post_id\nEnter 4 for like\nEnter 5 for comment\nEnter 6 to search word in comment\nEnter 7 to get comments\nEnter 8 for delete.\nEnter 9 to find the average words")
     if b == '1':
         owner_info()
     elif b == '2':
@@ -224,8 +247,10 @@ elif a=='2':
     elif b == '6':
         search_word_in_comment(insta_user)
     elif b == '7':
-        delete_comment(insta_user)
+        get_comment(insta_user)
     elif b == '8':
+        delete_comment(insta_user)
+    elif b == '9':
         post_id = get_user_post(insta_user)
         average_words(post_id)
     else:
